@@ -7,13 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/user")
+@RequestMapping("/user")
 @CrossOrigin(origins="http://localhost:4200")
 public class UserController {
 
@@ -303,7 +302,7 @@ public class UserController {
     }
 
     /**
-     * Clase para respuestas estandarizadas de la API
+     * Class for standardized API responses
      */
     public static class ApiResponse {
         private boolean success;
@@ -316,7 +315,7 @@ public class UserController {
             this.data = data;
         }
 
-        // Getters y Setters
+        // Getters/Setters
         public boolean isSuccess() { return success; }
         public void setSuccess(boolean success) { this.success = success; }
 
