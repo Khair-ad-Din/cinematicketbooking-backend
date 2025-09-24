@@ -30,6 +30,10 @@ public class MovieInteraction {
     @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "swipe_session_id", nullable = false)
+    private SwipeSession swipeSession;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "interaction_type", nullable = false)
     private InteractionType interactionType;

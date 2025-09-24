@@ -43,6 +43,9 @@ public class User {
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastname;
 
+    @Column(name = "avatar", length = 500)
+    private String avatar; // Avatar URL
+
     @Column(nullable = false)
     private boolean active = true;
 
@@ -61,9 +64,12 @@ public class User {
     @Column(name = "push_token", length = 500)
     private String pushToken;
 
-    @Column(name = "app_version", length = 20)
-    private String appVersion;
-
     @Column(name = "device_type", length = 20)
     private String deviceType;
+
+    @Column(name = "provider", length = 20)
+    private String provider = "email"; // By Default
+
+    @Column(name = "provider_id", length = 100)
+    private String providerId; // For OAuth account linking
 }
