@@ -1,6 +1,7 @@
 package com.WisdomMonkey.CinemaTicketBooking_Backend.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.web.exchanges.HttpExchange.Session;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,6 +9,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
+
+import com.WisdomMonkey.CinemaTicketBooking_Backend.security.JwtAuthenticationFilter;
+
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +35,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity // Enables Spring Security for this application
 public class SecurityConfig {
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     // Inject CORS configuration to allow cross-origin requests from frontend
     @Autowired
@@ -55,6 +64,8 @@ public class SecurityConfig {
                  * Uses the CORS configuration defined in CorsConfig.java
                  */
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
+
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 /*
                  * Authorization Rules:
@@ -94,9 +105,6 @@ public class SecurityConfig {
 
                         /*
                          * Public Authentication Endpoints:
-                         * These endpoints don't require authentication (users need them to get
-                         * authenticated!)
-                         * TODO: Implement these endpoints in Phase 2
                          */
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
 
@@ -106,15 +114,16 @@ public class SecurityConfig {
                          * TODO Phase 2: Replace with proper JWT authentication:
                          * .anyRequest().authenticated()
                          */
-                        .anyRequest().permitAll())
+                        // .anyRequest().permitAll())
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
                 /*
                  * Header Configuration:
                  * Configure security headers for the application
                  * sameOrigin: Allows framing only from the same origin (needed for H2 Console)
                  */
-                .headers(headers -> headers
-                        .frameOptions(frameOptions -> frameOptions.sameOrigin()));
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
 
         // Build and return the configured security filter chain
         return http.build();
