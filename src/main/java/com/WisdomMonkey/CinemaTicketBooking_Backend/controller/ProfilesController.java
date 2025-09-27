@@ -7,6 +7,7 @@ import com.WisdomMonkey.CinemaTicketBooking_Backend.dto.UserSummaryDto;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.entity.User;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.entity.UserProfile;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.security.JwtService;
+import com.WisdomMonkey.CinemaTicketBooking_Backend.service.UserPreferenceService;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.service.UserProfileService;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.service.UserService;
 
@@ -37,6 +38,9 @@ public class ProfilesController {
 
     @Autowired
     private UserProfileService userProfileService;
+
+    @Autowired
+    private UserPreferenceService userPreferenceService;
 
     @GetMapping("/me")
     public ResponseEntity<UserProfileDto> getCurrentUserProfile(HttpServletRequest request) {
@@ -173,11 +177,7 @@ public class ProfilesController {
             dto.setIsPublic(profile.getProfileVisibility() == UserProfile.ProfileVisibility.PUBLIC);
 
             // Parse favorite genres
-            if (profile.getFavoriteGenres() != null && !profile.getFavoriteGenres().isEmpty()) {
-                dto.setFavoriteGenres(List.of(profile.getFavoriteGenres().split(",")));
-            } else {
-                dto.setFavoriteGenres(List.of());
-            }
+            dto.setFavoriteGenres(userPreferenceService.getFavoriteGenres(user));
 
             dto.setMovieCount(profile.getTotalMoviesRated() != null ? profile.getTotalMoviesRated() : 0);
         } else {
@@ -186,7 +186,7 @@ public class ProfilesController {
             dto.setBio(null);
             dto.setIsPublic(true); // Default visibility
             dto.setMovieCount(0);
-            dto.setFavoriteGenres(List.of());
+            dto.setFavoriteGenres(userPreferenceService.getFavoriteGenres(user));
         }
 
         dto.setJoinedDate(user.getCreatedAt().toString());

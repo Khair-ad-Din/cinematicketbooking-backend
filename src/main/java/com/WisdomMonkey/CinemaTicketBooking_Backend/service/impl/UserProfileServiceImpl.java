@@ -9,6 +9,7 @@ import com.WisdomMonkey.CinemaTicketBooking_Backend.dto.UpdateProfileDto;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.entity.User;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.entity.UserProfile;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.repository.UserProfileRepository;
+import com.WisdomMonkey.CinemaTicketBooking_Backend.service.UserPreferenceService;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.service.UserProfileService;
 
 import jakarta.transaction.Transactional;
@@ -19,6 +20,9 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Autowired
     private UserProfileRepository userProfileRepository;
+
+    @Autowired
+    private UserPreferenceService userPreferenceService;
 
     public Optional<UserProfile> findByUser(User user) {
         return userProfileRepository.findByUser(user);
@@ -54,8 +58,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
 
         if (updateDto.getFavoriteGenres() != null) {
-            String genresString = String.join(",", updateDto.getFavoriteGenres());
-            profile.setFavoriteGenres(genresString);
+            userPreferenceService.updateGenrePreferences(user, updateDto.getFavoriteGenres());
         }
 
         return userProfileRepository.save(profile);

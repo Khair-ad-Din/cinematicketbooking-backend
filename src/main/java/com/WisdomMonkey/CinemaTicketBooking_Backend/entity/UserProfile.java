@@ -65,9 +65,6 @@ public class UserProfile {
     @Column(name = "display_name", length = 100)
     private String displayName;
 
-    @Column(name = "favorite_genres", length = 200)
-    private String favoriteGenres;
-
     @Column(name = "preferred_language", length = 10)
     private String preferredLanguage;
 
