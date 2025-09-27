@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins="http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     private final UserService userService;
@@ -216,10 +216,8 @@ public class UserController {
                     switch (key) {
                         case "username" -> user.setUsername((String) value);
                         case "email" -> user.setEmail((String) value);
-                        case "firstname" -> user.setFirstname((String) value);
-                        case "lastname" -> user.setLastname((String) value);
                         case "active" -> user.setActive((Boolean) value);
-                        case "password" -> user.setPassword((String) value); // TODO: Implement hash
+                        case "password" -> user.setPassword((String) value);
                     }
                 });
 
@@ -316,13 +314,28 @@ public class UserController {
         }
 
         // Getters/Setters
-        public boolean isSuccess() { return success; }
-        public void setSuccess(boolean success) { this.success = success; }
+        public boolean isSuccess() {
+            return success;
+        }
 
-        public String getMessage() { return message; }
-        public void setMessage(String message) { this.message = message; }
+        public void setSuccess(boolean success) {
+            this.success = success;
+        }
 
-        public Object getData() { return data; }
-        public void setData(Object data) { this.data = data; }
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public Object getData() {
+            return data;
+        }
+
+        public void setData(Object data) {
+            this.data = data;
+        }
     }
 }

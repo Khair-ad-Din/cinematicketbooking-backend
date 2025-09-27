@@ -6,8 +6,10 @@ import com.WisdomMonkey.CinemaTicketBooking_Backend.dto.UserConnectionDto;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.dto.UserSummaryDto;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.entity.Friendship;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.entity.User;
+import com.WisdomMonkey.CinemaTicketBooking_Backend.entity.UserProfile;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.security.JwtService;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.service.FriendshipService;
+import com.WisdomMonkey.CinemaTicketBooking_Backend.service.UserProfileService;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class FriendsController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserProfileService userProfileService;
 
     @Autowired
     private JwtService jwtService;
@@ -131,7 +136,10 @@ public class FriendsController {
         UserSummaryDto friendSummary = new UserSummaryDto();
         friendSummary.setId(friend.getId().toString());
         friendSummary.setUsername(friend.getUsername());
-        friendSummary.setDisplayName(friend.getFirstname());
+        String displayName = userProfileService.findByUser(friend)
+                .map(UserProfile::getDisplayName)
+                .orElse(friend.getUsername());
+        friendSummary.setDisplayName(displayName);
         friendSummary.setIsOnline(friend.isActive()); // Using active as online status
 
         UserConnectionDto dto = new UserConnectionDto();
@@ -147,15 +155,27 @@ public class FriendsController {
         UserSummaryDto fromUser = new UserSummaryDto();
         fromUser.setId(friendship.getUser1().getId().toString());
         fromUser.setUsername(friendship.getUser1().getUsername());
-        fromUser.setDisplayName(friendship.getUser1().getFirstname());
-        fromUser.setAvatarUrl(friendship.getUser1().getAvatar());
+        String fromDisplayName = userProfileService.findByUser(friendship.getUser1())
+                .map(UserProfile::getDisplayName)
+                .orElse(friendship.getUser1().getUsername());
+        fromUser.setDisplayName(fromDisplayName);
+        String fromAvatarUrl = userProfileService.findByUser(friendship.getUser1())
+                .map(UserProfile::getProfilePictureUrl)
+                .orElse(null);
+        fromUser.setAvatarUrl(fromAvatarUrl);
         fromUser.setIsOnline(friendship.getUser1().isActive());
 
         UserSummaryDto toUser = new UserSummaryDto();
         toUser.setId(friendship.getUser2().getId().toString());
         toUser.setUsername(friendship.getUser2().getUsername());
-        toUser.setDisplayName(friendship.getUser2().getFirstname());
-        toUser.setAvatarUrl(friendship.getUser2().getAvatar());
+        String toDisplayName = userProfileService.findByUser(friendship.getUser2())
+                .map(UserProfile::getDisplayName)
+                .orElse(friendship.getUser2().getUsername());
+        toUser.setDisplayName(toDisplayName);
+        String toAvatarUrl = userProfileService.findByUser(friendship.getUser2())
+                .map(UserProfile::getProfilePictureUrl)
+                .orElse(null);
+        toUser.setAvatarUrl(toAvatarUrl);
         toUser.setIsOnline(friendship.getUser2().isActive());
 
         FriendRequestDto dto = new FriendRequestDto();

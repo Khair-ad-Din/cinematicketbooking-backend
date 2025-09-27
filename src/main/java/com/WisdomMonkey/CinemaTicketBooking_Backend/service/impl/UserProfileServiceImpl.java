@@ -38,6 +38,10 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
 
         // Update profile fields
+        if (updateDto.getDisplayName() != null) {
+            profile.setDisplayName(updateDto.getDisplayName());
+        }
+
         if (updateDto.getBio() != null) {
             profile.setBio(updateDto.getBio());
         }

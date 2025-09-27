@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 /**
  * UserProfile Entity - Extended profile information for users
  *
- * This entity stores additional profile information separate from core User authentication data.
+ * This entity stores additional profile information separate from core User
+ * authentication data.
  * Separating profile data from user authentication follows best practices for:
  * - Security: Core auth data remains minimal and secure
  * - Performance: Profile data can be loaded separately when needed
@@ -60,6 +61,9 @@ public class UserProfile {
 
     @Column(name = "profile_picture_url", length = 500)
     private String profilePictureUrl;
+
+    @Column(name = "display_name", length = 100)
+    private String displayName;
 
     @Column(name = "favorite_genres", length = 200)
     private String favoriteGenres;
@@ -126,12 +130,12 @@ public class UserProfile {
 
     public boolean isFullyOnboarded() {
         return Boolean.TRUE.equals(onboardingCompleted) &&
-               Boolean.TRUE.equals(tutorialCompleted) &&
-               Boolean.TRUE.equals(swipeTutorialCompleted);
+                Boolean.TRUE.equals(tutorialCompleted) &&
+                Boolean.TRUE.equals(swipeTutorialCompleted);
     }
 
     public int getTotalMovieInteractions() {
         return (totalMoviesLiked != null ? totalMoviesLiked : 0) +
-               (totalMoviesDisliked != null ? totalMoviesDisliked : 0);
+                (totalMoviesDisliked != null ? totalMoviesDisliked : 0);
     }
 }

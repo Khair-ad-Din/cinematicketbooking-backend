@@ -35,17 +35,6 @@ public class User {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @NotBlank
-    @Column(name = "first_name", nullable = false, length = 50)
-    private String firstname;
-
-    @NotBlank
-    @Column(name = "last_name", nullable = false, length = 50)
-    private String lastname;
-
-    @Column(name = "avatar", length = 500)
-    private String avatar; // Avatar URL
-
     @Column(nullable = false)
     private boolean active = true;
 

@@ -65,11 +65,6 @@ public class ProfilesController {
     }
 
     private User updateUserProfile(User user, UpdateProfileDto updateDto) {
-
-        if (updateDto.getDisplayName() != null) {
-            user.setFirstname(updateDto.getDisplayName());
-        }
-
         User savedUser = userService.save(user);
 
         userProfileService.createOrUpdateProfile(savedUser, updateDto);
@@ -92,8 +87,7 @@ public class ProfilesController {
         List<User> filteredUsers = allUsers.stream()
                 .filter(user -> !user.getId().equals(currentUserId)) // Exclude current user
                 .filter(user -> user.getUsername().toLowerCase().contains(query.toLowerCase()) ||
-                        user.getEmail().toLowerCase().contains(query.toLowerCase()) ||
-                        user.getFirstname().toLowerCase().contains(query.toLowerCase()))
+                        user.getEmail().toLowerCase().contains(query.toLowerCase()))
                 .collect(Collectors.toList());
 
         // Simple pagination
@@ -167,13 +161,14 @@ public class ProfilesController {
         dto.setId(user.getId().toString());
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
-        dto.setDisplayName(user.getFirstname());
-        dto.setAvatarUrl(user.getAvatar());
 
         // Get UserProfile data
         Optional<UserProfile> userProfile = userProfileService.findByUser(user);
         if (userProfile.isPresent()) {
             UserProfile profile = userProfile.get();
+            dto.setDisplayName(profile.getDisplayName());
+            dto.setAvatarUrl(profile.getProfilePictureUrl());
+
             dto.setBio(profile.getBio());
             dto.setIsPublic(profile.getProfileVisibility() == UserProfile.ProfileVisibility.PUBLIC);
 
@@ -186,6 +181,8 @@ public class ProfilesController {
 
             dto.setMovieCount(profile.getTotalMoviesRated() != null ? profile.getTotalMoviesRated() : 0);
         } else {
+            dto.setDisplayName(null);
+            dto.setAvatarUrl(null);
             dto.setBio(null);
             dto.setIsPublic(true); // Default visibility
             dto.setMovieCount(0);
@@ -202,9 +199,17 @@ public class ProfilesController {
         UserSummaryDto dto = new UserSummaryDto();
         dto.setId(user.getId().toString());
         dto.setUsername(user.getUsername());
-        dto.setDisplayName(user.getFirstname());
-        dto.setAvatarUrl(user.getAvatar());
         dto.setIsOnline(user.isActive());
+
+        Optional<UserProfile> userProfile = userProfileService.findByUser(user);
+        if (userProfile.isPresent()) {
+            UserProfile profile = userProfile.get();
+            dto.setDisplayName(profile.getDisplayName());
+            dto.setAvatarUrl(profile.getProfilePictureUrl());
+        } else {
+            dto.setDisplayName(null);
+            dto.setAvatarUrl(null);
+        }
 
         return dto;
     }

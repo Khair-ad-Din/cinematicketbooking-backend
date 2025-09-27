@@ -2,9 +2,12 @@ package com.WisdomMonkey.CinemaTicketBooking_Backend.controller;
 
 import com.WisdomMonkey.CinemaTicketBooking_Backend.dto.AuthRequest;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.dto.AuthResponse;
+import com.WisdomMonkey.CinemaTicketBooking_Backend.dto.UpdateProfileDto;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.dto.UserResponse;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.entity.User;
+import com.WisdomMonkey.CinemaTicketBooking_Backend.entity.UserProfile;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.security.JwtService;
+import com.WisdomMonkey.CinemaTicketBooking_Backend.service.UserProfileService;
 import com.WisdomMonkey.CinemaTicketBooking_Backend.service.UserService;
 import jakarta.validation.Valid;
 
@@ -24,6 +27,9 @@ public class Authcontroller {
     private UserService userService;
 
     @Autowired
+    private UserProfileService userProfileService;
+
+    @Autowired
     private JwtService jwtService;
 
     @Autowired
@@ -40,13 +46,15 @@ public class Authcontroller {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setFirstname(request.getName());
-        user.setLastname("DEFAULT"); // Frontend only collects name
         user.setUsername(request.getEmail()); // Use email as username
         user.setActive(true);
         user.setCreatedAt(LocalDateTime.now());
 
         User savedUser = userService.save(user);
+
+        UpdateProfileDto profileDto = new UpdateProfileDto();
+        profileDto.setDisplayName(request.getName());
+        userProfileService.createOrUpdateProfile(savedUser, profileDto);
 
         // Generate JWT Token
         String token = jwtService.generateToken(savedUser.getEmail());
@@ -85,7 +93,10 @@ public class Authcontroller {
         UserResponse response = new UserResponse();
         response.setId(user.getId().toString());
         response.setEmail(user.getEmail());
-        response.setName(user.getFirstname());
+        String displayName = userProfileService.findByUser(user)
+                .map(UserProfile::getDisplayName)
+                .orElse(user.getUsername());
+        response.setName(displayName);
         response.setProvider(provider);
         response.setCreatedAt(user.getCreatedAt());
         return response;
