@@ -122,41 +122,27 @@ public class ProfilesController {
     }
 
     private Long getCurrentUserId(HttpServletRequest request) {
-        System.out.println("=== GET CURRENT USER ID START ===");
         String token = extractTokenFromRequest(request);
-        System.out.println("Extracted token: " + (token != null ? "Present (length: " + token.length() + ")" : "null"));
         String email = jwtService.extractEmail(token);
-        System.out.println("Extracted email from token: " + email);
         Optional<User> userOpt = userService.findByEmail(email);
-        System.out.println("User found by email: " + userOpt.isPresent());
         // User user = userService.findByEmail(email)
         // .orElseThrow(() -> new RuntimeException("User not found"));
         // return user.getId();
         if (userOpt.isPresent()) {
             Long userId = userOpt.get().getId();
-            System.out.println("User ID: " + userId);
-            System.out.println("=== GET CURRENT USER ID END ===");
             return userId;
         } else {
-            System.out.println("ERROR: No user found for email: " + email);
-            System.out.println("=== GET CURRENT USER ID END ===");
             throw new RuntimeException("User not found");
         }
     }
 
     private String extractTokenFromRequest(HttpServletRequest request) {
-        System.out.println("=== EXTRACT TOKEN START ===");
         String header = request.getHeader("Authorization");
-        System.out.println("Authorization header: " + (header != null ? "Present" : "null"));
         if (header != null && header.startsWith("Bearer ")) {
             // return header.substring(7);
             String token = header.substring(7);
-            System.out.println("Token extracted successfully");
-            System.out.println("=== EXTRACT TOKEN END ===");
             return token;
         }
-        System.out.println("ERROR: No valid token found in header");
-        System.out.println("=== EXTRACT TOKEN END ===");
         throw new RuntimeException("No valid token found");
     }
 

@@ -21,6 +21,8 @@ public interface FriendshipService {
 
     void removeFriend(Long friendshipId, Long userId);
 
+    void removeFriendByUserId(Long friendUserId, Long currentUserId);
+
     Optional<Friendship> findById(Long id);
 
     boolean existsFriendship(Long user1Id, Long user2Id);

@@ -107,7 +107,7 @@ public class FriendsController {
             HttpServletRequest request) {
         Long userId = getCurrentUserId(request);
 
-        friendshipService.removeFriend(friendId, userId);
+        friendshipService.removeFriendByUserId(friendId, userId);
         return ResponseEntity.ok().build();
     }
 

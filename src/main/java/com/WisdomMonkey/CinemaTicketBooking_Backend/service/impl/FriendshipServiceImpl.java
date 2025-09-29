@@ -30,10 +30,7 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public List<Friendship> getFriends(Long userId) {
-        return friendshipRepository.findAll().stream()
-                .filter(f -> (f.getUser1().getId().equals(userId) || f.getUser2().getId().equals(userId))
-                        && f.getStatus() == FriendshipStatus.ACCEPTED)
-                .collect(Collectors.toList());
+        return friendshipRepository.findFriendshipsByUserIdAndStatus(userId, FriendshipStatus.ACCEPTED);
     }
 
     @Override
@@ -43,9 +40,7 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public List<Friendship> getSentRequests(Long userId) {
-        return friendshipRepository.findAll().stream()
-                .filter(f -> f.getUser1().getId().equals(userId) && f.getStatus() == FriendshipStatus.PENDING)
-                .collect(Collectors.toList());
+        return friendshipRepository.findByUser1IdAndStatus(userId, FriendshipStatus.PENDING);
     }
 
     @Override
@@ -113,6 +108,23 @@ public class FriendshipServiceImpl implements FriendshipService {
         }
 
         friendshipRepository.delete(friendship);
+    }
+
+    @Override
+    public void removeFriendByUserId(Long friendUserId, Long currentUserId) {
+        Optional<Friendship> friendship = friendshipRepository.findByUser1IdAndUser2IdOrUser2IdAndUser1Id(
+                currentUserId, friendUserId, currentUserId, friendUserId);
+
+        if (friendship.isPresent()) {
+            Friendship f = friendship.get();
+            if (f.getStatus() == FriendshipStatus.ACCEPTED) {
+                friendshipRepository.delete(f);
+            } else {
+                throw new IllegalArgumentException("No active friendship found");
+            }
+        } else {
+            throw new IllegalArgumentException("Friendship not found");
+        }
     }
 
     @Override
